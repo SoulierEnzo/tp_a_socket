@@ -1,0 +1,80 @@
+Questions
+
+2.1.4
+
+— À quel moment la socket côté serveur est-elle bloquante ?
+Lorsque qu'elle attend une connexion (sur accept()) ou un message (sur recv()).
+
+— Que se passe-t-il si le client se connecte avant que le serveur ne soit prêt ?
+La connexion échoue car aucun serveur n'écoute encore sur le port.
+
+— Quelle est la différence entre bind() et listen() ?
+Le bind() lie la socket serveur à une adresse et un port ; le listen() indique que le serveur est prêt à accepter des connexions entrantes.
+
+2.2.4
+
+— Pourquoi faut-il une boucle dans le serveur ?
+Pour traiter plusieurs messages successifs sans devoir redémarrer la connexion à chaque fois.
+
+— Que se passe-t-il si on oublie de tester msg == "fin" ?
+Le serveur ne sortira jamais de la boucle et ne pourra pas fermer proprement la connexion.
+
+— Est-ce que le serveur peut envoyer plusieurs réponses d’affilée ?
+Oui, mais dans ce cas il faut que le client soit capable de recevoir ces réponses dans le bon ordre.
+
+2.3.4
+
+— Le serveur peut-il rester actif après une déconnexion client ?
+Oui, il peut continuer à écouter d’autres connexions dans la boucle principale.
+
+— Que faut-il modifier pour accepter plusieurs clients à la suite ?
+Utiliser une boucle externe qui relance accept() à chaque fois qu’un client se déconnecte.
+
+— Peut-on imaginer accepter des clients en parallèle ?
+Oui, en utilisant des threads ou des processus pour gérer plusieurs clients en même temps.
+
+2.4.4
+
+— Comment s’assurer que les deux côtés ne parlent pas en même temps ?
+En imposant un tour de parole : le client parle, le serveur répond, puis on recommence.
+
+— Peut-on rendre cet échange non bloquant ? Comment ?
+Oui, en utilisant des sockets non bloquantes, ou avec des threads/asynchrone.
+
+— Quelle est la meilleure façon de quitter proprement la communication ?
+Envoyer un message spécial comme "fin", puis fermer la socket des deux côtés.
+
+2.5.4
+
+— Quels sont les risques d’utiliser eval() ?
+L’exécution de code arbitraire envoyé par le client, pouvant compromettre le système.
+
+— Comment renvoyer une erreur sans faire planter le serveur ?
+En encapsulant eval() dans un try...except pour capturer et gérer les erreurs.
+
+2.6.5
+
+— Pourquoi structurer les messages avec /commande ?
+Pour distinguer clairement les actions ou types de messages envoyés au serveur.
+
+— Comment distinguer facilement les types de messages côté serveur ?
+En analysant le préfixe du message (par exemple, en testant si le message commence par /).
+
+2.7.4
+
+— Que se passe-t-il si deux clients envoient des messages en même temps ?
+Le serveur peut traiter les deux en parallèle si chaque client est géré dans un thread séparé.
+
+— Peut-on garder un état partagé entre clients ? Est-ce souhaitable ?
+Oui, c’est possible (par ex. une liste de messages), mais cela nécessite de protéger l'accès avec des verrous (lock) pour éviter les conflits.
+
+— Que faut-il pour aller plus loin vers une vraie messagerie ?
+Il faut un système de gestion des utilisateurs, des canaux, des messages groupés, et une gestion des états partagés de façon sécurisée.
+
+2.8.4
+
+— Pourquoi faut-il protéger certaines sections du code ?
+Pour éviter que plusieurs threads accèdent ou modifient en même temps une ressource partagée.
+
+— Que risque-t-on si deux clients modifient une même ressource simultanément ?
+Des conflits d’écriture, des données corrompues ou des erreurs difficiles à reproduire.
